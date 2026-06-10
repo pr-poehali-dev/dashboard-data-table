@@ -84,20 +84,47 @@ export default function CategoryChart({ data }: Props) {
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
         <Legend iconType="square" iconSize={9} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-        {categories.map((cat, i) => (
-          <Bar key={cat} dataKey={cat} stackId="a" fill={CATEGORY_COLORS[cat]}
-            radius={i === categories.length - 1 ? [0, 2, 2, 0] : [0, 0, 0, 0]}>
-            {chartData.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[cat]} />
-            ))}
-            <LabelList
-              dataKey={cat}
-              position="inside"
-              style={{ fill: "#fff", fontSize: 11, fontFamily: "IBM Plex Mono", fontWeight: 500 }}
-              formatter={(v: number) => (v > 0 ? v : "")}
-            />
-          </Bar>
-        ))}
+        {categories.map((cat, i) => {
+          const isLast = i === categories.length - 1;
+          return (
+            <Bar key={cat} dataKey={cat} stackId="a" fill={CATEGORY_COLORS[cat]}
+              radius={isLast ? [0, 2, 2, 0] : [0, 0, 0, 0]}>
+              {chartData.map((_, index) => (
+                <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[cat]} />
+              ))}
+              <LabelList
+                dataKey={cat}
+                position="inside"
+                style={{ fill: "#fff", fontSize: 11, fontFamily: "IBM Plex Mono", fontWeight: 500 }}
+                formatter={(v: number) => (v > 0 ? v : "")}
+              />
+              {isLast && (
+                <LabelList
+                  content={(props) => {
+                    const { x, y, width, height, index } = props as { x: number; y: number; width: number; height: number; index: number };
+                    const row = chartData[index];
+                    if (!row) return null;
+                    const total = categories.reduce((s, c) => s + ((row[c] as number) ?? 0), 0);
+                    if (total === 0) return null;
+                    return (
+                      <text
+                        x={x + width + 6}
+                        y={y + height / 2}
+                        dominantBaseline="middle"
+                        fill="hsl(var(--foreground))"
+                        fontSize={11}
+                        fontFamily="IBM Plex Mono"
+                        fontWeight={600}
+                      >
+                        {total}
+                      </text>
+                    );
+                  }}
+                />
+              )}
+            </Bar>
+          );
+        })}
       </BarChart>
     </ResponsiveContainer>
   );

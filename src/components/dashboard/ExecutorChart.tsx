@@ -87,6 +87,27 @@ export default function ExecutorChart({ data }: Props) {
             style={{ fill: "#fff", fontSize: 11, fontFamily: "IBM Plex Mono", fontWeight: 500 }}
             formatter={(v: number) => (v > 0 ? v : "")}
           />
+          <LabelList
+            content={(props) => {
+              const { x, y, width, height, index } = props as { x: number; y: number; width: number; height: number; index: number };
+              const row = chartData[index];
+              if (!row) return null;
+              const total = (row["Проблемные"] as number) + (row["Непроблемные"] as number);
+              return (
+                <text
+                  x={x + width + 6}
+                  y={y + height / 2}
+                  dominantBaseline="middle"
+                  fill="hsl(var(--foreground))"
+                  fontSize={11}
+                  fontFamily="IBM Plex Mono"
+                  fontWeight={600}
+                >
+                  {total}
+                </text>
+              );
+            }}
+          />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
