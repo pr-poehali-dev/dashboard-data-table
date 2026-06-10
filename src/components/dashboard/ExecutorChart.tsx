@@ -44,7 +44,7 @@ export default function ExecutorChart({ data }: Props) {
     return RESPONSIBLES.map((r) => {
       const items = data.filter((d) => d.responsible === r);
       return {
-        name: r.split(" ")[0],
+        name: r,
         "Проблемные": items.filter((d) => d.isProblem === 1).length,
         "Непроблемные": items.filter((d) => d.isProblem === 0).length,
       };
@@ -68,7 +68,7 @@ export default function ExecutorChart({ data }: Props) {
           tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
           axisLine={false}
           tickLine={false}
-          width={60}
+          width={90}
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
         <Legend iconType="square" iconSize={9} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />

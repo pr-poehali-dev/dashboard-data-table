@@ -23,10 +23,10 @@ type TooltipProps = { active?: boolean; payload?: TooltipPayloadItem[]; label?: 
 const CATEGORY_COLORS: Record<string, string> = {
   "Замена показателя и методики": "#ed8936",
   "Корректировка методики": "#ecc94b",
-  "МО": "#e53e3e",
+  "Выделение смежных маршрутов МО": "#e53e3e",
   "Полнота охвата": "#4299e1",
-  "не выносим": "#9f7aea",
-  "справочно": "#68d391",
+  "Не выносим": "#9f7aea",
+  "Справочно": "#68d391",
 };
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
@@ -55,7 +55,7 @@ export default function CategoryChart({ data }: Props) {
   const chartData = useMemo(() => {
     return RESPONSIBLES.map((r) => {
       const problems = data.filter((d) => d.isProblem === 1 && d.responsible === r);
-      const entry: Record<string, string | number> = { name: r.split(" ")[0] };
+      const entry: Record<string, string | number> = { name: r };
       categories.forEach((cat) => {
         entry[cat] = problems.filter((d) => d.problemCategory === cat).length;
       });
@@ -80,7 +80,7 @@ export default function CategoryChart({ data }: Props) {
           tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
           axisLine={false}
           tickLine={false}
-          width={60}
+          width={90}
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
         <Legend iconType="square" iconSize={9} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />

@@ -8,7 +8,7 @@ const totalOk = mockData.filter((d) => d.isProblem === 0).length;
 const problemPct = Math.round((totalProblems / mockData.length) * 100);
 
 const RESPONSIBLE_ORDER = ["Булатов Г.Б.", "Латыпов Р.М.", "Макаров В.В.", "Пронин Д.В.", "Кизлык М.А."];
-const CATEGORY_ORDER = ["Замена показателя и методики", "Корректировка методики", "МО", "Полнота охвата", "не выносим", "справочно"];
+const CATEGORY_ORDER = ["Замена показателя и методики", "Корректировка методики", "Выделение смежных маршрутов МО", "Полнота охвата", "Не выносим", "Справочно"];
 
 const sortedData = [...mockData].sort((a, b) => {
   const rA = RESPONSIBLE_ORDER.indexOf(a.responsible);
@@ -132,7 +132,7 @@ export default function Index() {
                       {row.isProblem === 1 ? (
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium rounded-sm bg-red-50 text-red-600 border border-red-100 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-                          Проблемный
+                          Требует решения
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium rounded-sm bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">
