@@ -9,18 +9,11 @@ type Props = {
 type SortKey = keyof Indicator;
 type SortDir = "asc" | "desc";
 
-const formatValue = (v: number, name: string): string => {
-  if (name.toLowerCase().includes("выручка") || name.toLowerCase().includes("расход") || name.toLowerCase().includes("бюджет дебитор")) {
-    return new Intl.NumberFormat("ru-RU").format(v);
-  }
-  return String(v);
-};
-
 export default function DataTable({ data }: Props) {
   const [sortKey, setSortKey] = useState<SortKey>("responsible");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [page, setPage] = useState(1);
-  const perPage = 8;
+  const perPage = 10;
 
   const sorted = [...data].sort((a, b) => {
     const av = a[sortKey];
@@ -42,20 +35,17 @@ export default function DataTable({ data }: Props) {
   };
 
   const SortIcon = ({ k }: { k: SortKey }) => {
-    if (sortKey !== k) return <Icon name="ChevronsUpDown" size={13} className="text-muted-foreground/50" />;
+    if (sortKey !== k) return <Icon name="ChevronsUpDown" size={13} className="text-muted-foreground/40" />;
     return sortDir === "asc"
       ? <Icon name="ChevronUp" size={13} className="text-foreground" />
       : <Icon name="ChevronDown" size={13} className="text-foreground" />;
   };
 
-  const cols: { key: SortKey; label: string; align?: string }[] = [
+  const cols: { key: SortKey; label: string }[] = [
     { key: "name", label: "Показатель" },
     { key: "responsible", label: "Исполнитель" },
-    { key: "department", label: "Отдел" },
-    { key: "value", label: "Значение", align: "right" },
     { key: "isProblem", label: "Статус" },
     { key: "problemCategory", label: "Категория проблемы" },
-    { key: "date", label: "Дата" },
   ];
 
   return (
@@ -64,13 +54,14 @@ export default function DataTable({ data }: Props) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
+              <th className="py-3 px-4 text-left text-xs text-muted-foreground font-medium w-8">#</th>
               {cols.map((col) => (
                 <th
                   key={col.key}
                   onClick={() => handleSort(col.key)}
-                  className={`py-3 px-4 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none ${col.align === "right" ? "text-right" : "text-left"}`}
+                  className="py-3 px-4 font-medium text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none text-left"
                 >
-                  <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1.5 uppercase tracking-wide">
                     {col.label}
                     <SortIcon k={col.key} />
                   </span>
@@ -81,7 +72,7 @@ export default function DataTable({ data }: Props) {
           <tbody>
             {paged.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-12 text-center text-muted-foreground">
+                <td colSpan={5} className="py-12 text-center text-muted-foreground">
                   Нет данных по выбранным фильтрам
                 </td>
               </tr>
@@ -89,31 +80,31 @@ export default function DataTable({ data }: Props) {
             {paged.map((row, i) => (
               <tr
                 key={row.id}
-                className={`border-b border-border/50 hover:bg-muted/40 transition-colors animate-slide-up`}
-                style={{ animationDelay: `${i * 30}ms`, animationFillMode: "both" }}
+                className="border-b border-border/50 hover:bg-muted/40 transition-colors animate-slide-up"
+                style={{ animationDelay: `${i * 20}ms`, animationFillMode: "both" }}
               >
-                <td className="py-3 px-4 font-medium">{row.name}</td>
-                <td className="py-3 px-4 text-muted-foreground">{row.responsible}</td>
-                <td className="py-3 px-4 text-muted-foreground">{row.department}</td>
-                <td className="py-3 px-4 text-right font-mono">{row.value}</td>
+                <td className="py-3 px-4 font-mono text-xs text-muted-foreground/50">
+                  {(page - 1) * perPage + i + 1}
+                </td>
+                <td className="py-3 px-4 font-medium max-w-sm">
+                  <span title={row.name} className="line-clamp-2 leading-snug">{row.name}</span>
+                </td>
+                <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">{row.responsible}</td>
                 <td className="py-3 px-4">
                   {row.isProblem === 1 ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-sm bg-red-50 text-red-600 border border-red-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-sm bg-red-50 text-red-600 border border-red-100 whitespace-nowrap">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
                       Проблемный
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-sm bg-blue-50 text-blue-600 border border-blue-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" />
-                      Норма
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-sm bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block shrink-0" />
+                      В норме
                     </span>
                   )}
                 </td>
-                <td className="py-3 px-4 text-muted-foreground text-xs">
+                <td className="py-3 px-4 text-xs text-muted-foreground whitespace-nowrap">
                   {row.isProblem === 1 ? row.problemCategory : "—"}
-                </td>
-                <td className="py-3 px-4 font-mono text-xs text-muted-foreground">
-                  {new Date(row.date).toLocaleDateString("ru-RU")}
                 </td>
               </tr>
             ))}
@@ -122,7 +113,7 @@ export default function DataTable({ data }: Props) {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border px-4 pb-4">
           <span className="text-xs text-muted-foreground">
             {data.length} записей · страница {page} из {totalPages}
           </span>
@@ -130,7 +121,7 @@ export default function DataTable({ data }: Props) {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1.5 text-sm border border-border rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-2.5 py-1.5 border border-border rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <Icon name="ChevronLeft" size={14} />
             </button>
@@ -138,7 +129,7 @@ export default function DataTable({ data }: Props) {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className={`px-3 py-1.5 text-sm border rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs border rounded transition-colors ${
                   page === p ? "bg-foreground text-background border-foreground" : "border-border hover:bg-muted"
                 }`}
               >
@@ -148,7 +139,7 @@ export default function DataTable({ data }: Props) {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-3 py-1.5 text-sm border border-border rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-2.5 py-1.5 border border-border rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <Icon name="ChevronRight" size={14} />
             </button>

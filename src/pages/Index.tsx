@@ -1,32 +1,25 @@
 import { useMemo, useState } from "react";
 import { mockData } from "@/data/mockData";
-import FilterPanel from "@/components/dashboard/FilterPanel";
+import FilterPanel, { Filters } from "@/components/dashboard/FilterPanel";
 import ExecutorChart from "@/components/dashboard/ExecutorChart";
 import CategoryChart from "@/components/dashboard/CategoryChart";
 import DataTable from "@/components/dashboard/DataTable";
 import StatCard from "@/components/dashboard/StatCard";
 import Icon from "@/components/ui/icon";
 
-type Filters = {
-  responsible: string;
-  department: string;
-  isProblem: string;
-  search: string;
-};
-
 export default function Index() {
   const [filters, setFilters] = useState<Filters>({
     responsible: "",
-    department: "",
     isProblem: "",
+    category: "",
     search: "",
   });
 
   const filtered = useMemo(() => {
     return mockData.filter((d) => {
       if (filters.responsible && d.responsible !== filters.responsible) return false;
-      if (filters.department && d.department !== filters.department) return false;
       if (filters.isProblem !== "" && String(d.isProblem) !== filters.isProblem) return false;
+      if (filters.category && d.problemCategory !== filters.category) return false;
       if (filters.search && !d.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
       return true;
     });

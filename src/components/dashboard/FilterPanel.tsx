@@ -1,10 +1,10 @@
 import Icon from "@/components/ui/icon";
-import { DEPARTMENTS, RESPONSIBLES } from "@/data/mockData";
+import { RESPONSIBLES, PROBLEM_CATEGORIES } from "@/data/mockData";
 
-type Filters = {
+export type Filters = {
   responsible: string;
-  department: string;
   isProblem: string;
+  category: string;
   search: string;
 };
 
@@ -18,7 +18,7 @@ export default function FilterPanel({ filters, onChange }: Props) {
     onChange({ ...filters, [key]: value });
 
   const hasActive =
-    filters.responsible || filters.department || filters.isProblem || filters.search;
+    filters.responsible || filters.isProblem || filters.category || filters.search;
 
   return (
     <div className="flex flex-wrap gap-3 items-center">
@@ -29,7 +29,7 @@ export default function FilterPanel({ filters, onChange }: Props) {
           placeholder="Поиск по названию..."
           value={filters.search}
           onChange={(e) => set("search", e.target.value)}
-          className="pl-8 pr-3 py-2 text-sm bg-card border border-border rounded focus:outline-none focus:ring-1 focus:ring-foreground transition-all w-52"
+          className="pl-8 pr-3 py-2 text-sm bg-card border border-border rounded focus:outline-none focus:ring-1 focus:ring-foreground transition-all w-60"
         />
       </div>
 
@@ -45,17 +45,6 @@ export default function FilterPanel({ filters, onChange }: Props) {
       </select>
 
       <select
-        value={filters.department}
-        onChange={(e) => set("department", e.target.value)}
-        className="px-3 py-2 text-sm bg-card border border-border rounded focus:outline-none focus:ring-1 focus:ring-foreground transition-all"
-      >
-        <option value="">Все отделы</option>
-        {DEPARTMENTS.map((d) => (
-          <option key={d} value={d}>{d}</option>
-        ))}
-      </select>
-
-      <select
         value={filters.isProblem}
         onChange={(e) => set("isProblem", e.target.value)}
         className="px-3 py-2 text-sm bg-card border border-border rounded focus:outline-none focus:ring-1 focus:ring-foreground transition-all"
@@ -65,9 +54,20 @@ export default function FilterPanel({ filters, onChange }: Props) {
         <option value="0">Непроблемные</option>
       </select>
 
+      <select
+        value={filters.category}
+        onChange={(e) => set("category", e.target.value)}
+        className="px-3 py-2 text-sm bg-card border border-border rounded focus:outline-none focus:ring-1 focus:ring-foreground transition-all"
+      >
+        <option value="">Все категории</option>
+        {PROBLEM_CATEGORIES.map((c) => (
+          <option key={c} value={c}>{c}</option>
+        ))}
+      </select>
+
       {hasActive && (
         <button
-          onClick={() => onChange({ responsible: "", department: "", isProblem: "", search: "" })}
+          onClick={() => onChange({ responsible: "", isProblem: "", category: "", search: "" })}
           className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <Icon name="X" size={13} />
