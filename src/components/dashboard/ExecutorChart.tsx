@@ -8,8 +8,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LabelList,
 } from "recharts";
-import { Indicator } from "@/data/mockData";
+import { Indicator, RESPONSIBLES } from "@/data/mockData";
 
 type Props = {
   data: Indicator[];
@@ -20,7 +21,7 @@ type TooltipProps = { active?: boolean; payload?: TooltipPayloadItem[]; label?: 
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (!active || !payload?.length) return null;
-  const total = (payload[0]?.value ?? 0) + (payload[1]?.value ?? 0);
+  const total = payload.reduce((s, p) => s + (p.value ?? 0), 0);
   return (
     <div className="bg-card border border-border px-4 py-3 text-sm shadow-sm">
       <p className="font-medium mb-2">{label}</p>
@@ -40,52 +41,53 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 
 export default function ExecutorChart({ data }: Props) {
   const chartData = useMemo(() => {
-    const map: Record<string, { ok: number; problem: number }> = {};
-    data.forEach((d) => {
-      if (!map[d.responsible]) map[d.responsible] = { ok: 0, problem: 0 };
-      if (d.isProblem === 1) map[d.responsible].problem++;
-      else map[d.responsible].ok++;
+    return RESPONSIBLES.map((r) => {
+      const items = data.filter((d) => d.responsible === r);
+      return {
+        name: r.split(" ")[0],
+        "Проблемные": items.filter((d) => d.isProblem === 1).length,
+        "Непроблемные": items.filter((d) => d.isProblem === 0).length,
+      };
     });
-    return Object.entries(map).map(([name, v]) => ({
-      name: name.split(" ")[0],
-      fullName: name,
-      "Непроблемные": v.ok,
-      "Проблемные": v.problem,
-    }));
   }, [data]);
-
-  if (!chartData.length) {
-    return (
-      <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">
-        Нет данных для отображения
-      </div>
-    );
-  }
 
   return (
     <ResponsiveContainer width="100%" height={260}>
-      <BarChart data={chartData} barGap={2} barSize={28}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+      <BarChart data={chartData} layout="vertical" barSize={22} margin={{ left: 0, right: 32, top: 4, bottom: 4 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
         <XAxis
-          dataKey="name"
-          tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <YAxis
-          tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))", fontFamily: "IBM Plex Mono" }}
+          type="number"
+          tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))", fontFamily: "IBM Plex Mono" }}
           axisLine={false}
           tickLine={false}
           allowDecimals={false}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
-        <Legend
-          iconType="square"
-          iconSize={10}
-          wrapperStyle={{ fontSize: 12, paddingTop: 12 }}
+        <YAxis
+          type="category"
+          dataKey="name"
+          tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+          axisLine={false}
+          tickLine={false}
+          width={60}
         />
-        <Bar dataKey="Непроблемные" fill="hsl(var(--ok))" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="Проблемные" fill="hsl(var(--problem))" radius={[2, 2, 0, 0]} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
+        <Legend iconType="square" iconSize={9} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
+        <Bar dataKey="Проблемные" stackId="a" fill="hsl(var(--problem))" radius={[0, 0, 0, 0]}>
+          <LabelList
+            dataKey="Проблемные"
+            position="inside"
+            style={{ fill: "#fff", fontSize: 11, fontFamily: "IBM Plex Mono", fontWeight: 500 }}
+            formatter={(v: number) => (v > 0 ? v : "")}
+          />
+        </Bar>
+        <Bar dataKey="Непроблемные" stackId="a" fill="hsl(var(--ok))" radius={[0, 2, 2, 0]}>
+          <LabelList
+            dataKey="Непроблемные"
+            position="insideRight"
+            style={{ fill: "#fff", fontSize: 11, fontFamily: "IBM Plex Mono", fontWeight: 500 }}
+            formatter={(v: number) => (v > 0 ? v : "")}
+          />
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );

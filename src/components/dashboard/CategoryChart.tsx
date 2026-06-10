@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Cell,
   Legend,
+  LabelList,
 } from "recharts";
 import { Indicator, RESPONSIBLES } from "@/data/mockData";
 
@@ -20,16 +21,17 @@ type TooltipPayloadItem = { value: number; fill: string; name: string };
 type TooltipProps = { active?: boolean; payload?: TooltipPayloadItem[]; label?: string };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  "МО": "#e53e3e",
   "Замена показателя и методики": "#ed8936",
-  "не выносим": "#9f7aea",
   "Корректировка методики": "#ecc94b",
+  "МО": "#e53e3e",
   "Полнота охвата": "#4299e1",
+  "не выносим": "#9f7aea",
   "справочно": "#68d391",
 };
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (!active || !payload?.length) return null;
+  const total = payload.reduce((s, p) => s + (p.value ?? 0), 0);
   return (
     <div className="bg-card border border-border px-4 py-3 text-sm shadow-sm">
       <p className="font-medium mb-2">{label}</p>
@@ -39,6 +41,10 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
           <span className="font-mono font-medium">{p.value}</span>
         </p>
       ))}
+      <p className="mt-2 pt-2 border-t border-border text-muted-foreground flex justify-between gap-6">
+        <span>Всего проблемных</span>
+        <span className="font-mono font-medium">{total}</span>
+      </p>
     </div>
   );
 };
@@ -59,27 +65,37 @@ export default function CategoryChart({ data }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={260}>
-      <BarChart data={chartData} barGap={2} barSize={14}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+      <BarChart data={chartData} layout="vertical" barSize={22} margin={{ left: 0, right: 32, top: 4, bottom: 4 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
         <XAxis
-          dataKey="name"
-          tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <YAxis
-          tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))", fontFamily: "IBM Plex Mono" }}
+          type="number"
+          tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))", fontFamily: "IBM Plex Mono" }}
           axisLine={false}
           tickLine={false}
           allowDecimals={false}
         />
+        <YAxis
+          type="category"
+          dataKey="name"
+          tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+          axisLine={false}
+          tickLine={false}
+          width={60}
+        />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
         <Legend iconType="square" iconSize={9} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-        {categories.map((cat) => (
-          <Bar key={cat} dataKey={cat} stackId="a" fill={CATEGORY_COLORS[cat]} radius={[0, 0, 0, 0]}>
+        {categories.map((cat, i) => (
+          <Bar key={cat} dataKey={cat} stackId="a" fill={CATEGORY_COLORS[cat]}
+            radius={i === categories.length - 1 ? [0, 2, 2, 0] : [0, 0, 0, 0]}>
             {chartData.map((_, index) => (
               <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[cat]} />
             ))}
+            <LabelList
+              dataKey={cat}
+              position="inside"
+              style={{ fill: "#fff", fontSize: 11, fontFamily: "IBM Plex Mono", fontWeight: 500 }}
+              formatter={(v: number) => (v > 0 ? v : "")}
+            />
           </Bar>
         ))}
       </BarChart>
