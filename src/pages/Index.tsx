@@ -8,12 +8,16 @@ const totalOk = mockData.filter((d) => d.isProblem === 0).length;
 const problemPct = Math.round((totalProblems / mockData.length) * 100);
 
 const RESPONSIBLE_ORDER = ["Булатов Г.Б.", "Латыпов Р.М.", "Макаров В.В.", "Пронин Д.В.", "Кизлык М.А."];
+const CATEGORY_ORDER = ["Замена показателя и методики", "Корректировка методики", "МО", "Полнота охвата", "не выносим", "справочно"];
 
 const sortedData = [...mockData].sort((a, b) => {
   const rA = RESPONSIBLE_ORDER.indexOf(a.responsible);
   const rB = RESPONSIBLE_ORDER.indexOf(b.responsible);
   if (rA !== rB) return rA - rB;
-  return b.isProblem - a.isProblem;
+  if (a.isProblem !== b.isProblem) return b.isProblem - a.isProblem;
+  const cA = CATEGORY_ORDER.indexOf(a.problemCategory);
+  const cB = CATEGORY_ORDER.indexOf(b.problemCategory);
+  return cA - cB;
 });
 
 export default function Index() {
