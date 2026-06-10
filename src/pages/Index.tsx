@@ -7,6 +7,15 @@ const totalProblems = mockData.filter((d) => d.isProblem === 1).length;
 const totalOk = mockData.filter((d) => d.isProblem === 0).length;
 const problemPct = Math.round((totalProblems / mockData.length) * 100);
 
+const RESPONSIBLE_ORDER = ["Булатов Г.Б.", "Латыпов Р.М.", "Макаров В.В.", "Пронин Д.В.", "Кизлык М.А."];
+
+const sortedData = [...mockData].sort((a, b) => {
+  const rA = RESPONSIBLE_ORDER.indexOf(a.responsible);
+  const rB = RESPONSIBLE_ORDER.indexOf(b.responsible);
+  if (rA !== rB) return rA - rB;
+  return b.isProblem - a.isProblem;
+});
+
 export default function Index() {
   return (
     <div className="min-h-screen bg-background font-ibm">
@@ -109,7 +118,7 @@ export default function Index() {
                 </tr>
               </thead>
               <tbody>
-                {mockData.map((row, i) => (
+                {sortedData.map((row, i) => (
                   <tr key={row.id} className="border-b border-border/40 hover:bg-muted/30 transition-colors">
                     <td className="py-2 px-4 font-mono text-[11px] text-muted-foreground/40">{i + 1}</td>
                     <td className="py-2 px-4 text-[12px] max-w-md">
