@@ -52,7 +52,7 @@ export default function ExecutorChart({ data }: Props) {
   }, [data]);
 
   return (
-    <ResponsiveContainer width="100%" height={260}>
+    <ResponsiveContainer width="100%" height="100%" minHeight={220}>
       <BarChart data={chartData} layout="vertical" barSize={22} margin={{ left: 0, right: 32, top: 4, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
         <XAxis
