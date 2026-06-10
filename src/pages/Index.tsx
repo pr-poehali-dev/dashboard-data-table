@@ -19,9 +19,18 @@ export default function Index() {
             </div>
             <span className="font-medium text-sm tracking-wide">Дашборд показателей</span>
           </div>
-          <span className="text-xs text-muted-foreground font-mono">
-            {new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })}
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-muted-foreground font-mono">
+              {new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })}
+            </span>
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-border rounded-sm bg-card hover:bg-muted transition-colors print:hidden"
+            >
+              <Icon name="Printer" size={13} />
+              Печать / PDF
+            </button>
+          </div>
         </div>
       </header>
 
